@@ -1,13 +1,12 @@
 package com.ulms.app.company.controller;
 
 import com.ulms.app.company.dto.EmployerJobRequestDto;
+import com.ulms.app.company.dto.JobRequestResponseDto;
 import com.ulms.app.company.services.JobRequestServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,9 +19,16 @@ public class JobsController {
 
 
     @PostMapping("/request")
-    public ResponseEntity postJob(@RequestBody List<EmployerJobRequestDto> jobRequest){
-       Boolean isPosted= jobRequestServices.postJob(jobRequest);
-       return isPosted ? ResponseEntity.accepted().build() : ResponseEntity.status(500).build();
+    public ResponseEntity<String> postJob(@RequestBody List<EmployerJobRequestDto> jobRequest){
+       Long postId= jobRequestServices.postJob(jobRequest);
+       return new ResponseEntity<>("Request ID: "+postId, HttpStatus.ACCEPTED);
+    }
+    @GetMapping("/request")
+    public ResponseEntity<JobRequestResponseDto> getAllRequests(){
+      List<JobRequestResponseDto> jobRequests=jobRequestServices.getRequests();
+
+      return new ResponseEntity(jobRequests,HttpStatus.OK);
+
     }
 
 

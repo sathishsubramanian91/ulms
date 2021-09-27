@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,9 @@ public class JobRequestEntity  extends BaseId {
 
     @ManyToOne(cascade = CascadeType.DETACH)
     UserDetailEntity user;
+
+    private Date requestedDate;
+    private String status;
 
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     @JoinColumn(name = "requestId")

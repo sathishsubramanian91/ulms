@@ -1,6 +1,7 @@
 package com.ulms.app.company.services;
 
 import com.ulms.app.company.dto.EmployerJobRequestDto;
+import com.ulms.app.company.dto.JobRequestResponseDto;
 import com.ulms.app.company.entity.EmployerJobRequest;
 import com.ulms.app.company.entity.JobRequestEntity;
 import com.ulms.app.company.repo.EmployerJobRequestRepository;
@@ -14,9 +15,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class JobRequestServices {
@@ -34,7 +37,7 @@ public class JobRequestServices {
     ModelMapper modelMapper;
 
     @Transactional
-    public Boolean postJob(List<EmployerJobRequestDto> jobRequest) {
+    public Long postJob(List<EmployerJobRequestDto> jobRequest) {
         JobRequestEntity jobRequestPage=new JobRequestEntity();
         AppUserDetails appUserDetails= (AppUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username= appUserDetails.getUsername();
@@ -45,7 +48,8 @@ public class JobRequestServices {
             throw new RuntimeException("User is not activated. please re-activate again and request");
 
         jobRequestPage.setUser(userDetailEntity.get());
-
+        jobRequestPage.setRequestedDate(new Date(System.currentTimeMillis()));
+        jobRequestPage.setStatus("New");
         jobRequestPage= jobRequestEntityRepository.save(jobRequestPage);
 
         Long requestId= jobRequestPage.getId();
@@ -56,7 +60,7 @@ public class JobRequestServices {
                 .collect(Collectors.toList());
         jobRequestPage.setJobRequestList(jobRequestRepository.saveAll(employerRequest));
 
-        return  true;
+        return jobRequestPage.getId();
     }
 
     public List<EmployerJobRequestDto> getAllJob(){
@@ -74,4 +78,46 @@ public class JobRequestServices {
     }
 
 
+    @Transactional
+    public List<JobRequestResponseDto> getRequests() {
+
+      AppUserDetails appUserDetails=(AppUserDetails) SecurityContextHolder.getContext().
+             getAuthentication().getPrincipal();
+      String username=appUserDetails.getUsername();
+      UserDetailEntity userDetailEntity= userDetailRepository.findByUsername(username).get();
+      Long id=userDetailEntity.getId();
+      List<JobRequestEntity> jobRequestEntities= jobRequestEntityRepository.findRequestByUserId(id);
+      return convertToJobRequestsDto(jobRequestEntities);
+
+    }
+
+    private List<JobRequestResponseDto> convertToJobRequestsDto(List<JobRequestEntity> jobRequestEntities) {
+
+        return jobRequestEntities.stream().flatMap(s -> Stream.ofNullable(s)).
+                map(each -> {
+                    JobRequestResponseDto responseDto=new JobRequestResponseDto();
+                    responseDto.setRaisedBy(each.getUser().getUsername());
+                    responseDto.setRaisedOn(each.getRequestedDate());
+                    responseDto.setStatus(each.getStatus());
+                    responseDto.setRequests( each.getJobRequestList().stream()
+                            .flatMap(m -> Stream.ofNullable(m)).map(
+                                    request -> {
+                                        EmployerJobRequestDto request1=new EmployerJobRequestDto();
+                                        request1.setId(request.getId());
+                                        request1.setAccommodation(request.getAccommodation());
+                                        request1.setDescription(request.getDescription());
+                                        request1.setFoodProvided(request.getFoodProvided());
+                                        request1.setNoOfPplRequired(request.getNoOfPplRequired());
+                                        request1.setSalary(request.getSalary());
+                                        request1.setSalaryType(request.getSalaryType());
+                                        request1.setSkills(request.getSkills());
+                                        request1.setRequiredFromDate(request.getRequiredFromDate());
+                                        request1.setRequiredToDate(request.getRequiredToDate());
+                                        return request1;
+                                    }
+                            ).collect(Collectors.toList()));
+                    return responseDto;
+                }).collect(Collectors.toList());
+
+    }
 }

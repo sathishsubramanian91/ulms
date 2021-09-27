@@ -1,20 +1,23 @@
 package com.ulms.app.user.entity;
 
+
 import com.ulms.app.repo.BaseId;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 
 @Entity
-@Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
 @AllArgsConstructor
-public class ContactDetailsEntity extends BaseId {
-    private String name;
+@Data
+public class AdminContactEntity  extends BaseId {
+
+    private String contactPersonName;
     private String primaryMobileNumber;
     private String secondaryMobileNumber;
-    private String landline;
+    private String officeLandline;
     private String emailAddress;
+    private Long userDetailsEntityId;
 }

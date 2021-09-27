@@ -27,4 +27,6 @@ public class EmployerJobRequest extends BaseId {
     private Boolean foodProvided;
     @Column(columnDefinition = "Text")
     private String description;
+    private Long requestId;
+
 }

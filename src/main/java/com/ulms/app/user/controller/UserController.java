@@ -3,6 +3,7 @@ package com.ulms.app.user.controller;
 
 import com.ulms.app.dto.JwtToken;
 import com.ulms.app.dto.OrgSignUpRequest;
+import com.ulms.app.dto.SignUp;
 import com.ulms.app.user.utils.AuthenticationUtils;
 import com.ulms.app.user.services.UserServices;
 import com.ulms.app.security.utils.JwtTokenGenerator;
@@ -33,8 +34,8 @@ public class UserController {
         return "App is up and running ";
     }
 
-    @PostMapping("org/register")
-    public ResponseEntity<?> register(@RequestBody OrgSignUpRequest signUpRequest){
+    @PostMapping("user/register")
+    public ResponseEntity<?> register(@RequestBody SignUp signUpRequest){
 
        Boolean isSucces= userServices.register(signUpRequest);
        if(isSucces)
@@ -42,12 +43,12 @@ public class UserController {
        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(isSucces);
     }
 
-    @GetMapping("/verifyun")
+    @GetMapping("user/verifyun")
     public Boolean verifyUserName(@RequestParam String username){
         return userServices.verifyun(username);
     }
 
-    @PostMapping("org/login")
+    @PostMapping("user/login")
     public ResponseEntity<JwtToken> login(@RequestHeader(HttpHeaders.AUTHORIZATION) String header) {
         System.out.println("Authorization "+header);
         if(header == null){

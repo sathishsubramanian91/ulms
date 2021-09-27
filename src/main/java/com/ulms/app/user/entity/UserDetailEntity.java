@@ -16,13 +16,11 @@ import javax.persistence.OneToOne;
 public class UserDetailEntity extends BaseId {
     private String firstname;
     private String lastname;
-    private String orgName;
     private String username;
     private String password;
     private String email;
     private String role;
     private Boolean isActivated;
     private Boolean isActive;
-    @OneToOne
-    private ContactDetailsEntity contactDetails;
+
 }

@@ -1,6 +1,6 @@
 package com.ulms.app.user.services;
 
-import com.ulms.app.dto.OrgSignUpRequest;
+import com.ulms.app.dto.SignUp;
 import com.ulms.app.user.entity.UserDetailEntity;
 import com.ulms.app.user.repo.UserDetailRepository;
 import com.ulms.app.util.mail.MailServices;
@@ -31,21 +31,20 @@ public class UserServicesImp implements UserServices {
 
 
     @Override
-    public boolean register(OrgSignUpRequest signUpRequest) {
+    public boolean register(SignUp signUpRequest) {
         Optional<UserDetailEntity> userDetailOptional = userDetailRepository.findByUsername(signUpRequest.getUsername());
         if (userDetailOptional.isPresent())
             throw new RuntimeException("User exists already");
         try {
             UserDetailEntity userDetailEntity = new UserDetailEntity();
             userDetailEntity.setUsername(signUpRequest.getUsername());
-            userDetailEntity.setOrgName(signUpRequest.getOrgName());
             userDetailEntity.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
             userDetailEntity.setRole(signUpRequest.getRole());
             userDetailEntity.setEmail(signUpRequest.getEmail());
             userDetailEntity.setIsActive(true);
             userDetailEntity.setIsActivated(false);
             userDetailEntity = userDetailRepository.saveAndFlush(userDetailEntity);
-            sendmail(userDetailEntity);
+//            sendmail(userDetailEntity);
         }catch(Exception ex){
             ex.printStackTrace();
             return false;

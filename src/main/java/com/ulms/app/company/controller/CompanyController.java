@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/comp")
+@RequestMapping("/api/v1")
 public class CompanyController {
 
     @Autowired
@@ -22,12 +22,11 @@ public class CompanyController {
 
 
 
-    @PostMapping("/register")
+    @PostMapping("/org/register")
     public ResponseEntity<CompanyDetails> register(@RequestBody CompanyDetails companyDetails){
 
        CompanyDetails registerd = companyServices.register(companyDetails);
        return ResponseEntity.status(HttpStatus.CREATED).body(registerd);
-
     }
 
 }

@@ -22,7 +22,7 @@ public class EmpJwtAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
 
-    String authenticationUrl ="/api/v1/org/login";
+    String authenticationUrl ="/api/v1/user/login";
     public EmpJwtAuthenticationFilter(AuthenticationManager authenticationManager,String secretKey) {
         this.secretKey = secretKey;
         this.authenticationManager = authenticationManager;
